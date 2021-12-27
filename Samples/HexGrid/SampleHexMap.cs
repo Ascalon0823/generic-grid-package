@@ -51,6 +51,7 @@ namespace CGS.Grid.Sample
                 cell.text = map[x, y];
                 cell.gameObject.transform.localScale = new Vector3(map.CellSize.z, 1f, map.CellSize.z)*0.95f;
             });
+            Camera.main.transform.position = map.GetPos(new HexCoord(width/2,height/2))+Vector3.up*10f;
         }
 
         private void Update()
