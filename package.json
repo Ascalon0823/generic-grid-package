@@ -1,0 +1,8 @@
+{
+  "name": "com.cgs.genericgrid",
+  "displayName": "Generic Grid",
+  "version": "1.0.0",
+  "unity": "2019.4",
+  "keywords": ["Grid"],
+  "description": "Generic grid provides basic and spatial (square or hex) grid system for games."
+}
