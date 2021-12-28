@@ -131,5 +131,10 @@ namespace CGS.Grid
 
             return result;
         }
+
+        public override bool IsValid(Vector2Int coord)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

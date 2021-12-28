@@ -1,7 +1,70 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CGS.Grid
 {
+    #region Def&Utils
+
+    /*
+     *   NW NE
+     * W       E
+     *   SW SE
+     */
+    public enum HexDir
+    {
+        NE,
+        E,
+        SE,
+        SW,
+        W,
+        NW
+    }
+
+    public static class HexDirExtensions
+    {
+        private static readonly HexDir[] _each = {HexDir.NE, HexDir.E, HexDir.SE, HexDir.SW, HexDir.W, HexDir.NW};
+        private static readonly Dictionary<int, HexDir> _indexingMap = new Dictionary<int, HexDir>
+        {
+            {-1, HexDir.NW}, {0, HexDir.NE}, {1, HexDir.E},
+            {2, HexDir.SE}, {3, HexDir.SW}, {4, HexDir.W},
+            {5, HexDir.NW}, {6, HexDir.NE}, {7, HexDir.E},
+            {8, HexDir.SE},
+        };
+        
+        private static readonly Dictionary<HexDir,HexCoord> _coordMap = new Dictionary<HexDir, HexCoord>
+        {
+            {HexDir.NE,new HexCoord(0,1)},{HexDir.E,new HexCoord(1,0)},
+            {HexDir.SE,new HexCoord(1,-1)},{HexDir.SW,new HexCoord(0,-1)},
+            {HexDir.W,new HexCoord(-1,0)},{HexDir.NW,new HexCoord(-1,-1)}
+        };
+
+        public static HexDir[] Each()
+        {
+            return _each;
+        }
+
+        public static HexCoord ToCoord(this HexDir direction)
+        {
+            return _coordMap[direction];
+        }
+
+        public static HexDir Opposite(this HexDir direction)
+        {
+            return _indexingMap[(int) direction + 3];
+        }
+
+        public static HexDir Previous(this HexDir direction)
+        {
+            return _indexingMap[(int) direction - 1];
+        }
+
+        public static HexDir Next(this HexDir direction)
+        {
+            return _indexingMap[(int) direction + 1];
+        }
+    }
+
     public static class HexUtil
     {
         public static float InnerRadius(float outerRadius)
@@ -22,15 +85,31 @@ namespace CGS.Grid
 
         public HexCoord(int x, int z)
         {
-            X = x - z / 2;
+            X = x;
             Z = z;
         }
+
+        public static HexCoord FromSquareCoord(int x, int z)
+        {
+            return new HexCoord(x-z/2,z);
+        }
+
+        public static HexCoord operator +(HexCoord a) => a;
+        public static HexCoord operator -(HexCoord a) => new HexCoord(-a.X,-a.Z);
+        public static HexCoord operator +(HexCoord a, HexCoord b)
+            => new HexCoord(a.X + b.X, a.Z+b.Z);
+
+        public static HexCoord operator -(HexCoord a, HexCoord b)
+            => a + (-b);
 
         public override string ToString()
         {
             return $"{X} {Y} {Z}";
         }
     }
+
+    #endregion
+
 
     public class HexGrid<T> : SpatialGrid<T, HexCoord>
     {
@@ -52,7 +131,7 @@ namespace CGS.Grid
         {
             return new Vector3((coord.X + coord.Z / 2) * CellSize.x + HalfCellSize.x + coord.Z % 2 * HalfCellSize.x,
                 0f,
-                coord.Z * HalfCellSize.z * 1.5f + HalfCellSize.z)+AnchorPos;
+                coord.Z * HalfCellSize.z * 1.5f + HalfCellSize.z) + AnchorPos;
         }
 
         public override T GetCell(HexCoord coord)
@@ -62,7 +141,7 @@ namespace CGS.Grid
 
         public override HexCoord FromPos(Vector3 pos)
         {
-            pos -= AnchorPos+HalfCellSize;
+            pos -= AnchorPos + HalfCellSize;
             var x = pos.x / CellSize.x;
             var y = -x;
             var off = pos.z / (CellSize.z * 1.5f);
@@ -71,7 +150,7 @@ namespace CGS.Grid
             var iX = Mathf.RoundToInt(x);
             var iY = Mathf.RoundToInt(y);
             var iZ = Mathf.RoundToInt(-x - y);
-            if (iX + iY + iZ == 0) return new HexCoord(iX+iZ/2, iZ);
+            if (iX + iY + iZ == 0) return new HexCoord(iX, iZ);
             var dX = Mathf.Abs(x - iX);
             var dY = Mathf.Abs(y - iY);
             var dZ = Mathf.Abs(-x - y - iZ);
@@ -85,7 +164,7 @@ namespace CGS.Grid
                 iZ = -iX - iY;
             }
 
-            return new HexCoord(iX+iZ/2, iZ);
+            return new HexCoord(iX, iZ);
         }
 
         public override T GetCell(Vector3 pos)
@@ -95,7 +174,12 @@ namespace CGS.Grid
 
         public override HexCoord[] GetNeighbours(HexCoord coord)
         {
-            throw new System.NotImplementedException();
+            return HexDirExtensions.Each().Select(x => coord + x.ToCoord()).ToArray();
+        }
+
+        public override bool IsValid(HexCoord coord)
+        {
+            return base.IsValid(coord.X + coord.Z / 2, coord.Z);
         }
     }
 }
