@@ -9,7 +9,7 @@
     {
       "displayName": "Sample Hex Grid",
       "description": "Contains sample hex map for hex grid",
-      "path": "Samples~/HexGrid"
+      "path": "Samples/HexGrid"
     }
   ]
 }
