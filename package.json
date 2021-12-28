@@ -7,7 +7,7 @@
   "description": "Generic grid provides basic and spatial (square or hex) grid system for games.",
   "samples": [
     {
-      "displayName": "Sample Hex Shaders",
+      "displayName": "Sample Hex Grid",
       "description": "Contains sample hex map for hex grid",
       "path": "Samples~/HexGrid"
     }
