@@ -27,10 +27,10 @@ namespace CGS.Grid
 
         private static readonly Dictionary<int, HexDir> _indexingMap = new Dictionary<int, HexDir>
         {
-            {-1, HexDir.NW}, {0, HexDir.NE}, {1, HexDir.E},
-            {2, HexDir.SE}, {3, HexDir.SW}, {4, HexDir.W},
-            {5, HexDir.NW}, {6, HexDir.NE}, {7, HexDir.E},
-            {8, HexDir.SE},
+            {-2, HexDir.W}, {-1, HexDir.NW}, {0, HexDir.NE},
+            {1, HexDir.E}, {2, HexDir.SE}, {3, HexDir.SW},
+            {4, HexDir.W}, {5, HexDir.NW}, {6, HexDir.NE},
+            {7, HexDir.E},
         };
 
         private static readonly Dictionary<HexDir, HexCoord> _coordMap = new Dictionary<HexDir, HexCoord>
@@ -64,6 +64,16 @@ namespace CGS.Grid
         {
             return _indexingMap[(int) direction + 1];
         }
+
+        public static HexDir DirToNext(this HexDir direction)
+        {
+            return _indexingMap[(int) direction + 2];
+        }
+
+        public static HexDir DirToPrev(this HexDir direction)
+        {
+            return _indexingMap[(int) direction - 2];
+        }
     }
 
     public static class HexUtil
@@ -85,6 +95,7 @@ namespace CGS.Grid
         public int Y => -X - Z;
 
         public int Magnitude => (Mathf.Abs(X) + Mathf.Abs(Z) + Mathf.Abs(Y)) / 2;
+
         public HexCoord(int x, int z)
         {
             X = x;
@@ -96,8 +107,15 @@ namespace CGS.Grid
             return new HexCoord(x - z / 2, z);
         }
 
+        public (int, int) ToSquareCoord()
+        {
+            return (X + Z / 2, Z);
+        }
+
         public static HexCoord operator +(HexCoord a) => a;
         public static HexCoord operator -(HexCoord a) => new HexCoord(-a.X, -a.Z);
+        public static HexCoord operator *(HexCoord a, int b) => new HexCoord(a.X * b, a.Z * b);
+        public static HexCoord operator *(int b, HexCoord a) => a * b;
 
         public static HexCoord operator +(HexCoord a, HexCoord b)
             => new HexCoord(a.X + b.X, a.Z + b.Z);
@@ -110,20 +128,23 @@ namespace CGS.Grid
             return $"{X} {Y} {Z}";
         }
 
-        public HexCoord[] Neighbours()
+        public HexCoord[] Neighbours(int depth = 1)
         {
-            var result = new HexCoord[6];
+            var result = new HexCoord[depth * 6];
             foreach (var dir in HexDirExtensions.Each())
             {
-                result[(int) dir] = this + dir.ToCoord();
+                for (var i = 0; i < depth; i++)
+                {
+                    result[(int) dir * depth + i] = Neighbour(dir, depth) + i * dir.DirToNext().ToCoord();
+                }
             }
 
             return result;
         }
 
-        public HexCoord Neighbour(HexDir dir)
+        public HexCoord Neighbour(HexDir dir, int depth = 1)
         {
-            return this + dir.ToCoord();
+            return this + dir.ToCoord() * depth;
         }
 
         public int DistanceTo(HexCoord other)
@@ -168,6 +189,7 @@ namespace CGS.Grid
                 0f,
                 coord.Z * HalfCellSize.z * 1.5f + HalfCellSize.z) + AnchorPos;
         }
+
         public override HexCoord FromPos(Vector3 pos)
         {
             pos -= AnchorPos + HalfCellSize;
@@ -195,10 +217,12 @@ namespace CGS.Grid
 
             return new HexCoord(iX, iZ);
         }
+
         public override T GetCell(HexCoord coord)
         {
             return !IsValid(coord.X + coord.Z / 2, coord.Z) ? default : this[coord.X + coord.Z / 2, coord.Z];
         }
+
         public override T GetCell(Vector3 pos)
         {
             return GetCell(FromPos(pos));
