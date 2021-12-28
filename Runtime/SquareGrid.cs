@@ -120,18 +120,6 @@ namespace CGS.Grid
         {
             return new Vector2Int(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.z));
         }
-
-        public override Vector2Int[] GetNeighbours(Vector2Int coord)
-        {
-            var result = new Vector2Int[8];
-            for (var i = 0; i < 8; i++)
-            {
-                result[i] = coord + ((SquareDir) i).ToCoord();
-            }
-
-            return result;
-        }
-
         public override bool IsValid(Vector2Int coord)
         {
             throw new NotImplementedException();

@@ -30,7 +30,6 @@ namespace CGS.Grid
         public abstract T GetCell(TCoord coord);
         public abstract T GetCell(Vector3 pos);
         public abstract TCoord FromPos(Vector3 pos);
-        public abstract TCoord[] GetNeighbours(TCoord coord);
         public abstract bool IsValid(TCoord coord);
     }
 }
