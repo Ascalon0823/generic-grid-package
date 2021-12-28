@@ -84,6 +84,7 @@ namespace CGS.Grid
         public int X, Z;
         public int Y => -X - Z;
 
+        public int Magnitude => (Mathf.Abs(X) + Mathf.Abs(Z) + Mathf.Abs(Y)) / 2;
         public HexCoord(int x, int z)
         {
             X = x;
@@ -123,6 +124,11 @@ namespace CGS.Grid
         public HexCoord Neighbour(HexDir dir)
         {
             return this + dir.ToCoord();
+        }
+
+        public int DistanceTo(HexCoord other)
+        {
+            return (other - this).Magnitude;
         }
 
         public override int GetHashCode()
