@@ -4,5 +4,12 @@
   "version": "1.0.0",
   "unity": "2019.4",
   "keywords": ["Grid"],
-  "description": "Generic grid provides basic and spatial (square or hex) grid system for games."
+  "description": "Generic grid provides basic and spatial (square or hex) grid system for games.",
+  "samples": [
+    {
+      "displayName": "Sample Hex Shaders",
+      "description": "Contains sample hex map for hex grid",
+      "path": "Samples~/HexGrid"
+    }
+  ]
 }
