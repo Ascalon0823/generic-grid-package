@@ -83,6 +83,24 @@ namespace CGS.Grid
         {
             return DirCoordToEnum[dir];
         }
+
+        public static Vector2Int[] Neighbours(this Vector2Int pos, int depth = 1)
+        {
+            var result = new Vector2Int[depth*8];
+            
+            return result;
+        }
+        
+
+        public static Vector2Int Neighbour(this Vector2Int pos, SquareDir dir, int depth = 1)
+        {
+            return pos + dir.ToCoord() * depth;
+        }
+
+        public static int DistanceTo(this Vector2Int from, Vector2Int to)
+        {
+            return Mathf.Abs(from.x - to.x) + Mathf.Abs(from.y - to.y);
+        }
     }
 
     public class SquareGrid<T> : SpatialGrid<T, Vector2Int>
@@ -103,7 +121,7 @@ namespace CGS.Grid
 
         public override Vector3 GetPos(Vector2Int coord)
         {
-            return AnchorPos + new Vector3(coord.x * CellSize.x, coord.y * CellSize.z) + HalfCellSize;
+            return AnchorPos + new Vector3(coord.x * CellSize.x, 0,coord.y * CellSize.z) + HalfCellSize;
         }
 
         public override T GetCell(Vector2Int coord)
@@ -122,7 +140,7 @@ namespace CGS.Grid
         }
         public override bool IsValid(Vector2Int coord)
         {
-            throw new NotImplementedException();
+            return IsValid(coord.x,coord.y);
         }
     }
 }
