@@ -3,7 +3,7 @@ namespace CGS.Grid
     [System.Serializable]
     public class Grid<T>
     {
-        protected readonly T[,] Data;
+        public T[,] Data { get; }
 
         public Grid(int x, int y)
         {
