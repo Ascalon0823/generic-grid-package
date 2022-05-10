@@ -46,7 +46,10 @@ namespace CGS.Grid
                 _ => throw new ArgumentOutOfRangeException(nameof(squareDir), squareDir, null)
             };
         }
-
+        public static Vector3 To2DVector3(this SquareDir squareDir)
+        {
+            return (Vector2)squareDir.ToCoord();
+        }
         public static Vector3 ToVector3(this SquareDir squareDir)
         {
             return squareDir switch
@@ -136,7 +139,7 @@ namespace CGS.Grid
 
         public override Vector2Int FromPos(Vector3 pos)
         {
-            return new Vector2Int(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.z));
+            return new Vector2Int(Mathf.FloorToInt(pos.x-AnchorPos.x), Mathf.FloorToInt(pos.z-AnchorPos.z));
         }
         public override bool IsValid(Vector2Int coord)
         {
