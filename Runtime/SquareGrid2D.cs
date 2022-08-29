@@ -28,5 +28,10 @@ namespace CGS.Grid
         {
             return AnchorPos + new Vector3(coord.x * CellSize.x, coord.y * CellSize.y, 0f) + HalfCellSize;
         }
+
+        public Vector3 GetPos(int x, int y)
+        {
+            return AnchorPos + new Vector3(x * CellSize.x, y * CellSize.y, 0f) + HalfCellSize;
+        }
     }
 }
