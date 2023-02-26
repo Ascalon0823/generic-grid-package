@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
 namespace CGS.Grid
 {
     [System.Serializable]
@@ -70,7 +74,18 @@ namespace CGS.Grid
                 }
             }
         }
-        
+
+        public List<Vector2Int> Where(Func<int, int, bool> prediction)
+        {
+            if (prediction == null) return null;
+            var list = new List<Vector2Int>();
+            Iterate((x, y) =>
+            {
+                if (!prediction(x, y)) return;
+                list.Add(new Vector2Int(x, y));
+            });
+            return list;
+        }
         
 
         public override string ToString()
