@@ -30,6 +30,7 @@ namespace CGS.Grid
                 {new Vector2Int(-1, 0), SquareDir.Left},
                 {new Vector2Int(-1, 1), SquareDir.UpLeft},
             };
+
         private static readonly Dictionary<int, SquareDir> IntCoordMap =
             new Dictionary<int, SquareDir>
             {
@@ -44,6 +45,7 @@ namespace CGS.Grid
                 {7, SquareDir.UpLeft},
                 {8, SquareDir.Up},
             };
+
         public static Vector2Int ToCoord(this SquareDir squareDir)
         {
             return squareDir switch
@@ -101,7 +103,7 @@ namespace CGS.Grid
         {
             return IntCoordMap[(int) squareDir + 1];
         }
-        
+
         public static SquareDir Prev(this SquareDir squareDir)
         {
             return IntCoordMap[(int) squareDir - 1];
@@ -113,18 +115,51 @@ namespace CGS.Grid
             return DirCoordToEnum[dir];
         }
 
-        public static Vector2Int[] Neighbours(this Vector2Int pos, int depth = 1)
+        public static Vector2Int[] Neighbours(this Vector2Int pos)
         {
-            var result = new Vector2Int[depth * 8];
+            var result = new Vector2Int[8];
             for (var i = 0; i < 8; i++)
             {
-                for (var j = 0; j < depth; j++)
-                {
-                    result[i * depth + j] = pos + ((SquareDir) i).ToCoord() * depth + ((SquareDir) i).ToCoord() * j;
-                }
+                result[i] = pos + ((SquareDir) i).ToCoord();
             }
 
             return result;
+        }
+
+        public static Vector2Int[] HalfNeighbours(this Vector2Int pos)
+        {
+            var result = new Vector2Int[4];
+            for (var i = 0; i < 4; i++)
+            {
+                result[i] = pos + ((SquareDir) (i * 2)).ToCoord();
+            }
+
+            return result;
+        }
+
+        public static Vector2Int[] SquareAreaNeighbours(this Vector2Int pos, int depth)
+        {
+            var results = new List<Vector2Int>();
+            for (var i = -depth; i <= depth; i++)
+            for (var j = -depth; j <= depth; j++)
+            {
+                results.Add(pos + new Vector2Int(i, j));
+            }
+
+            return results.ToArray();
+        }
+
+        public static Vector2Int[] DiamondAreaNeighbours(this Vector2Int pos, int depth)
+        {
+            var results = new List<Vector2Int>();
+            for (var i = -depth; i <= depth; i++)
+            for (var j = -depth; j <= depth; j++)
+            {
+                if (Mathf.Abs(i) + Mathf.Abs(j) > depth) continue;
+                results.Add(pos + new Vector2Int(i, j));
+            }
+
+            return results.ToArray();
         }
 
 
